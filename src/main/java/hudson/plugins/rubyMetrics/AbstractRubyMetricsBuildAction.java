@@ -31,114 +31,114 @@ import org.kohsuke.stapler.StaplerResponse;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractRubyMetricsBuildAction implements HealthReportingAction {
-	
-	protected final AbstractBuild<?, ?> owner;
-	
-	protected AbstractRubyMetricsBuildAction(AbstractBuild<?, ?> owner) {
-		this.owner = owner;
-	}
-	
-	public <T extends AbstractRubyMetricsBuildAction>T getPreviousResult() {        
-        AbstractBuild<?, ?> b = owner;
-        while (true) {
-            b = b.getPreviousBuild();
-            if (b == null)
-                return null;
-            if (b.getResult() == Result.FAILURE)
-                continue;
-            AbstractRubyMetricsBuildAction r = b.getAction(this.getClass());
-            if (r != null)
-                return (T) r;
-        }
+
+  protected final AbstractBuild <? , ? > owner;
+
+  protected AbstractRubyMetricsBuildAction(AbstractBuild <? , ? > owner) {
+    this.owner = owner;
+  }
+
+  public <T extends AbstractRubyMetricsBuildAction>T getPreviousResult() {
+    AbstractBuild <? , ? > b = owner;
+    while (true) {
+      b = b.getPreviousBuild();
+      if (b == null)
+        return null;
+      if (b.getResult() == Result.FAILURE)
+        continue;
+      AbstractRubyMetricsBuildAction r = b.getAction(this.getClass());
+      if (r != null)
+        return (T) r;
+    }
+  }
+
+  protected abstract DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> getDataSetBuilder();
+
+  public void doGraph(StaplerRequest req, StaplerResponse rsp) throws IOException {
+    if (ChartUtil.awtProblemCause != null) {
+      rsp.sendRedirect2(req.getContextPath() + "/images/headless.png");
+      return;
     }
 
-    protected abstract DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> getDataSetBuilder();
-    
-    public void doGraph(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        if (ChartUtil.awtProblemCause != null) {
-            rsp.sendRedirect2(req.getContextPath() + "/images/headless.png");
-            return;
-        }
+    Calendar t = owner.getTimestamp();
 
-        Calendar t = owner.getTimestamp();
-
-        if (req.checkIfModified(t, rsp)) {
-            return; // up to date
-        }
-
-        ChartUtil.generateGraph(req, rsp, createChart(getDataSetBuilder().build(), getRangeAxisLabel()), 500, 200);
+    if (req.checkIfModified(t, rsp)) {
+      return; // up to date
     }
 
-    private JFreeChart createChart(CategoryDataset dataset, String rangeAxisLabel) {
+    ChartUtil.generateGraph(req, rsp, createChart(getDataSetBuilder().build(), getRangeAxisLabel()), 500, 200);
+  }
 
-        final JFreeChart chart = ChartFactory.createLineChart(
-                null,                   // chart title
-                null,                   // unused
-                rangeAxisLabel,          // range axis label
-                dataset,                  // data
-                PlotOrientation.VERTICAL, // orientation
-                true,                     // include legend
-                true,                     // tooltips
-                false                     // urls
-        );
+  private JFreeChart createChart(CategoryDataset dataset, String rangeAxisLabel) {
 
-        // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
+    final JFreeChart chart = ChartFactory.createLineChart(
+                               null,                   // chart title
+                               null,                   // unused
+                               rangeAxisLabel,          // range axis label
+                               dataset,                  // data
+                               PlotOrientation.VERTICAL, // orientation
+                               true,                     // include legend
+                               true,                     // tooltips
+                               false                     // urls
+                             );
 
-        final LegendTitle legend = chart.getLegend();
-        legend.setPosition(RectangleEdge.RIGHT);
+    // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
 
-        chart.setBackgroundPaint(Color.white);
+    final LegendTitle legend = chart.getLegend();
+    legend.setPosition(RectangleEdge.RIGHT);
 
-        final CategoryPlot plot = chart.getCategoryPlot();
+    chart.setBackgroundPaint(Color.white);
 
-        // plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 5.0, 5.0, 5.0, 5.0));
-        plot.setBackgroundPaint(Color.WHITE);
-        plot.setOutlinePaint(null);
-        plot.setRangeGridlinesVisible(true);
-        plot.setRangeGridlinePaint(Color.black);
+    final CategoryPlot plot = chart.getCategoryPlot();
 
-        CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
-        plot.setDomainAxis(domainAxis);
-        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
-        domainAxis.setLowerMargin(0.0);
-        domainAxis.setUpperMargin(0.0);
-        domainAxis.setCategoryMargin(0.0);
+    // plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 5.0, 5.0, 5.0, 5.0));
+    plot.setBackgroundPaint(Color.WHITE);
+    plot.setOutlinePaint(null);
+    plot.setRangeGridlinesVisible(true);
+    plot.setRangeGridlinePaint(Color.black);
 
-        final NumberAxis rangeAxis = getRangeAxis(plot);
+    CategoryAxis domainAxis = new ShiftedCategoryAxis(null);
+    plot.setDomainAxis(domainAxis);
+    domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+    domainAxis.setLowerMargin(0.0);
+    domainAxis.setUpperMargin(0.0);
+    domainAxis.setCategoryMargin(0.0);
 
-        final LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
-        renderer.setBaseStroke(new BasicStroke(2.0f));
-        ColorPalette.apply(renderer);
+    final NumberAxis rangeAxis = getRangeAxis(plot);
 
-        // crop extra space around the graph
-        plot.setInsets(new RectangleInsets(5.0, 0, 0, 5.0));
+    final LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
+    renderer.setBaseStroke(new BasicStroke(2.0f));
+    ColorPalette.apply(renderer);
 
-        return chart;
-    }
+    // crop extra space around the graph
+    plot.setInsets(new RectangleInsets(5.0, 0, 0, 5.0));
 
-	public AbstractBuild<?, ?> getOwner() {
-		return owner;
-	}
-	
-	protected NumberAxis getRangeAxis(CategoryPlot plot) {
-		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-        rangeAxis.setUpperBound(100);
-        rangeAxis.setLowerBound(0);
-        
-        return rangeAxis;
-	}
-	
-	protected String getRangeAxisLabel() {
-		return "";
-	}
+    return chart;
+  }
 
-	public HealthReport getBuildHealth() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public String getIconFileName() {
-		return "graph.gif";
-	}
+  public AbstractBuild <? , ? > getOwner() {
+    return owner;
+  }
+
+  protected NumberAxis getRangeAxis(CategoryPlot plot) {
+    NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+    rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+    rangeAxis.setUpperBound(100);
+    rangeAxis.setLowerBound(0);
+
+    return rangeAxis;
+  }
+
+  protected String getRangeAxisLabel() {
+    return "";
+  }
+
+  public HealthReport getBuildHealth() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public String getIconFileName() {
+    return "graph.gif";
+  }
 }

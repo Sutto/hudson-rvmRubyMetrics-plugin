@@ -22,61 +22,57 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Rails notes {@link Publisher}
- * 
+ *
  * @author Adam Stegman
  */
 public class RailsNotesPublisher extends AbstractRailsTaskPublisher {
-    
-    @DataBoundConstructor
-    public RailsNotesPublisher(String rakeInstallation, String rakeWorkingDir) {
-        super(rakeInstallation, rakeWorkingDir, "notes");
-    }
 
-    protected void buildAction(StringOutputStream out, AbstractBuild<?, ?> build) {
-    	final RailsNotesParser parser = new RailsNotesParser();
-        RailsNotesResults results = parser.parse(out);
-        
-        RailsNotesBuildAction action = new RailsNotesBuildAction(build, results);
-        build.getActions().add(action);
-    }  
-       
-    @Override
-    public Action getProjectAction(AbstractProject<?,?> project) {
-        return new RailsNotesProjectAction(project);
-    }
+  @DataBoundConstructor
+  public RailsNotesPublisher(String rubyString, String rakeWorkingDir) {
+    super(rubyString, rakeWorkingDir, "notes");
+  }
 
-    @Extension
-    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+  protected void buildAction(StringOutputStream out, AbstractBuild <? , ? > build) {
+    final RailsNotesParser parser = new RailsNotesParser();
+    RailsNotesResults results = parser.parse(out);
 
-    public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+    RailsNotesBuildAction action = new RailsNotesBuildAction(build, results);
+    build.getActions().add(action);
+  }
 
-        protected DescriptorImpl() {
-            super(RailsNotesPublisher.class);           
-        }
-        
-        @Override
-        public String getHelpFile() {
-            return "/plugin/rubyMetrics/railsNotesHelp.html";
-        }
+  @Override
+  public Action getProjectAction(AbstractProject <? , ? > project) {
+    return new RailsNotesProjectAction(project);
+  }
 
-        @Override
-        public String getDisplayName() {
-            return "Publish Rails Notes report";
-        }
-        
-        public RubyInstallation[] getRakeInstallations() {
-            return Rake.DESCRIPTOR.getInstallations();
-        }
+  @Extension
+  public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
-        @Override
-        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return true;
-        }
+  public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
+    protected DescriptorImpl() {
+      super(RailsNotesPublisher.class);
     }
 
     @Override
-    public BuildStepDescriptor<Publisher> getDescriptor() {
-        return DESCRIPTOR;
+    public String getHelpFile() {
+      return "/plugin/rubyMetrics/railsNotesHelp.html";
     }
+
+    @Override
+    public String getDisplayName() {
+      return "Publish Rails Notes report";
+    }
+
+    @Override
+    public boolean isApplicable(Class <? extends AbstractProject > jobType) {
+      return true;
+    }
+
+  }
+
+  @Override
+  public BuildStepDescriptor<Publisher> getDescriptor() {
+    return DESCRIPTOR;
+  }
 }

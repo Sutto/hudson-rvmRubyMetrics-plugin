@@ -18,8 +18,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class <%= @camelized_name %>Publisher extends AbstractRailsTaskPublisher {
 	
     @DataBoundConstructor
-    public <%= @camelized_name %>Publisher(String rakeInstallation, String rakeWorkingDir) {
-        super(rakeInstallation, rakeWorkingDir, <%= @rake_task %>);
+    public <%= @camelized_name %>Publisher(String rubyString, String rakeWorkingDir) {
+        super(rubyString, rakeWorkingDir, <%= @rake_task %>);
     }
 
     protected void buildAction(StringOutputStream out, AbstractBuild<?, ?> build) {
@@ -47,10 +47,6 @@ public class <%= @camelized_name %>Publisher extends AbstractRailsTaskPublisher 
         @Override
         public String getDisplayName() {
             return "Publish <%= @real_name %> report";
-        }
-
-        public RubyInstallation[] getRakeInstallations() {
-            return Rake.DESCRIPTOR.getInstallations();
         }
 
         @Override
