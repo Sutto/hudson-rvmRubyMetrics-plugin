@@ -1,4 +1,4 @@
-package hudson.plugins.rubyMetrics.<%= @package_name %>.model;
+package hudson.plugins.rvmRubyMetrics.<%= @package_name %>.model;
 
 public class <%= @camelized_name %>BuildResults {
   /* model to transport data */

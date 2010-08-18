@@ -1,4 +1,4 @@
 <div>
-  This plugin integrates a bunch of ruby coverage tools (Rcov, Saikuro, Rails stats...) to Hudson. Currently it just supports Rcov reports.
+  This plugin integrates a bunch of ruby coverage tools (Rcov, Saikuro, Rails stats...) to Hudson.
   It uses a rvm backed ruby to generate the reports.
 </div>

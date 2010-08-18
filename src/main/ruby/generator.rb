@@ -1,4 +1,4 @@
-# Script to generate the skeleton for a rubyMetrics publisher
+# Script to generate the skeleton for a rvmRubyMetrics publisher
 require 'rubygems'
 require 'erubis'
 require 'fileutils'
@@ -47,12 +47,12 @@ package_name = camelize(tool_name, false)
 
 puts "generating directory structure..."
 
-java_base_directory = File.join(File.dirname(__FILE__), '..', 'java', 'hudson', 'plugins', 'rubyMetrics', package_name)
+java_base_directory = File.join(File.dirname(__FILE__), '..', 'java', 'hudson', 'plugins', 'rvmRubyMetrics', package_name)
 java_model_directory = File.join(java_base_directory, 'model')
 FileUtils.mkdir_p java_base_directory
 FileUtils.mkdir_p java_model_directory
 
-jelly_directory = File.join(File.dirname(__FILE__), '..', 'resources', 'hudson', 'plugins', 'rubyMetrics', package_name)
+jelly_directory = File.join(File.dirname(__FILE__), '..', 'resources', 'hudson', 'plugins', 'rvmRubyMetrics', package_name)
 jelly_paths = {}
 ["#{camelized_name}Publisher", "#{camelized_name}BuildAction", "#{camelized_name}ProjectAction"].each do |path|
   jelly_paths[path] = FileUtils.mkdir_p File.join(jelly_directory, path)

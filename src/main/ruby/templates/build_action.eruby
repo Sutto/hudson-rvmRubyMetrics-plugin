@@ -1,9 +1,9 @@
-package hudson.plugins.rubyMetrics.<%= @package_name %>;
+package hudson.plugins.rvmRubyMetrics.<%= @package_name %>;
 
 import hudson.model.AbstractBuild;
 import hudson.model.HealthReport;
-import hudson.plugins.rubyMetrics.AbstractRubyMetricsBuildAction;
-import hudson.plugins.rubyMetrics.<%= @package_name %>.model.<%= @camelized_name %>BuildResults;
+import hudson.plugins.rvmRubyMetrics.AbstractRubyMetricsBuildAction;
+import hudson.plugins.rvmRubyMetrics.<%= @package_name %>.model.<%= @camelized_name %>BuildResults;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;

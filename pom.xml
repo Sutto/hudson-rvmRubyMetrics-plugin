@@ -8,11 +8,11 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
     
-  <artifactId>rubyMetrics</artifactId>
+  <artifactId>rvmRubyMetrics</artifactId>
   <packaging>hpi</packaging>
-  <version>1.4.2-SNAPSHOT</version>
-  <name>Hudson ruby metrics  plugin</name>
-  <url>http://wiki.hudson-ci.org/display/HUDSON/Ruby+Metrics+Plugin</url>
+  <version>1.0-SNAPSHOT</version>
+  <name></name>
+  <url>http://github.com/Sutto/hudson-rvmRubyMetrics-plugin</url>
   
   <scm>
     <connection>scm:git:git://github.com/Sutto/hudson-rvmRubyMetrics-plugin.git</connection>
